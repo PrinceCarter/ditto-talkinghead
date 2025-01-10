@@ -23,16 +23,8 @@ Ant Group
     <!-- <a href='https://github.com/antgroup/ditto-talkinghead'><img src='https://img.shields.io/github/stars/antgroup/ditto-talkinghead?style=social'></a> -->
 </div>
 <br>
-
-<table align='center' border="0" style="width: 95%; text-align: center;">
-  <tr>
-    <td>
-      <video align='center' src="https://digital-avatar.github.io/ai/Ditto/asserts/videos/full_body_en.mp4" muted="false"></video>
-    </td>
-  </tr>
-</table>
-
 <div align="center">
+    <video style="width: 95%; object-fit: cover;" controls loop src="https://github.com/user-attachments/assets/ef1a0b08-bff3-4997-a6dd-62a7f51cdb40" muted="false"></video>
     <p>
     ✨  For more results, visit our <a href="https://digital-avatar.github.io/ai/Ditto/"><strong>Project Page</strong></a> ✨ 
     </p>
