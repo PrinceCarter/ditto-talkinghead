@@ -17,7 +17,7 @@ class WarpNetwork:
         kp_source | kp_driving: np.ndarray, shape (1, 21, 3)
         """
         if self.model_type == "onnx":
-            pred = self.model.run(None, {"feature_3d": feature_3d, "kp_source": kp_source, "kp_driving": kp_driving})
+            pred = self.model.run(None, {"feature_3d": feature_3d, "kp_source": kp_source, "kp_driving": kp_driving})[0]
         elif self.model_type == "tensorrt":
             self.model.setup({"feature_3d": feature_3d, "kp_source": kp_source, "kp_driving": kp_driving})
             self.model.infer()
