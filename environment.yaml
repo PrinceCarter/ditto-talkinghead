@@ -137,4 +137,6 @@ dependencies:
       - threadpoolctl==3.5.0
       - tifffile==2024.12.12
       - tqdm==4.67.1
+      - polygraphy
+      - colored
 prefix: /opt/conda/envs/ditto

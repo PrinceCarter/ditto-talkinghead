@@ -108,9 +108,12 @@ def onnx_to_trt_for_gridsample(onnx_file, trt_file, fp16=False, plugin_file="./l
 def main(onnx_dir, trt_dir, grid_sample_plugin_file=""):
     names = [i[:-5] for i in os.listdir(onnx_dir) if i.endswith(".onnx")]
     for name in names:
+        if name == "warp_network_ori":
+            continue
+        
         print("=" * 20, f"{name} start", "=" * 20)
 
-        fp16 = False if name in {"motion_extractor", "hubert", "wavlm"} else True
+        fp16 = False if name in {"motion_extractor", "hubert", "wavlm"} or name.startswith("lmdm") else True
 
         more_cmd = None
         if name == "wavlm":
