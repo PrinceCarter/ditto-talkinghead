@@ -20,8 +20,8 @@ Ant Group
     <a href='https://digital-avatar.github.io/ai/Ditto/'><img src='https://img.shields.io/badge/Project-Page-blue'></a>
     <a href='https://huggingface.co/digital-avatar/ditto-talkinghead'><img src='https://img.shields.io/badge/Model-HuggingFace-yellow'></a>
     <a href='https://github.com/antgroup/ditto-talkinghead'><img src='https://img.shields.io/badge/Code-GitHub-purple'></a>
-    <a href='https://colab.research.google.com/drive/19SUi1TiO32IS-Crmsu9wrkNspWE8tFbs?usp=sharing'><img src='https://img.shields.io/badge/Demo-Colab-orange'></a>
     <!-- <a href='https://github.com/antgroup/ditto-talkinghead'><img src='https://img.shields.io/github/stars/antgroup/ditto-talkinghead?style=social'></a> -->
+    <a href='https://colab.research.google.com/drive/19SUi1TiO32IS-Crmsu9wrkNspWE8tFbs?usp=sharing'><img src='https://img.shields.io/badge/Demo-Colab-orange'></a>
 </div>
 <br>
 <div align="center">
@@ -33,6 +33,8 @@ Ant Group
 
 
 ## 📌 Updates
+* [2025.07.11] 🔥 The [PyTorch model](#-pytorch-model) is now available.
+* [2025.07.07] 🔥 Ditto is accepted by ACM MM 2025.
 * [2025.01.21] 🔥 We update the [Colab](https://colab.research.google.com/drive/19SUi1TiO32IS-Crmsu9wrkNspWE8tFbs?usp=sharing) demo, welcome to try it. 
 * [2025.01.10] 🔥 We release our inference [codes](https://github.com/antgroup/ditto-talkinghead) and [models](https://huggingface.co/digital-avatar/ditto-talkinghead).
 * [2024.11.29] 🔥 Our [paper](https://arxiv.org/abs/2411.19509) is in public on arxiv.
@@ -160,10 +162,51 @@ python inference.py \
 We have provided the tensorRT model with `hardware-compatibility-level=Ampere_Plus` (`checkpoints/ditto_trt_Ampere_Plus/`). If your GPU does not support it, please execute the `cvt_onnx_to_trt.py` script to convert from the general onnx model (`checkpoints/ditto_onnx/`) to the tensorRT model.
 
 ```bash
-python script/cvt_onnx_to_trt.py --onnx_dir "./checkpoints/ditto_onnx" --trt_dir "./checkpoints/ditto_trt_custom"
+python scripts/cvt_onnx_to_trt.py --onnx_dir "./checkpoints/ditto_onnx" --trt_dir "./checkpoints/ditto_trt_custom"
 ```
 
 Then run `inference.py` with `--data_root=./checkpoints/ditto_trt_custom`.
+
+
+## ⚡ PyTorch Model
+*Based on community interest and to better support further development, we are now open-sourcing the PyTorch version of the model.*
+
+
+We have added the PyTorch model and corresponding configuration files to the [HuggingFace](https://huggingface.co/digital-avatar/ditto-talkinghead). Please refer to [Download Checkpoints](#-download-checkpoints) to prepare the model files.
+
+The `checkpoints` should be like:
+```text
+./checkpoints/
+├── ditto_cfg
+│   ├── ...
+│   └── v0.4_hubert_cfg_pytorch.pkl
+├── ...
+└── ditto_pytorch
+    ├── aux_models
+    │   ├── 2d106det.onnx
+    │   ├── det_10g.onnx
+    │   ├── face_landmarker.task
+    │   ├── hubert_streaming_fix_kv.onnx
+    │   └── landmark203.onnx
+    └── models
+        ├── appearance_extractor.pth
+        ├── decoder.pth
+        ├── lmdm_v0.4_hubert.pth
+        ├── motion_extractor.pth
+        ├── stitch_network.pth
+        └── warp_network.pth
+```
+
+To run inference, execute the following command:
+
+```shell
+python inference.py \
+    --data_root "./checkpoints/ditto_pytorch" \
+    --cfg_pkl "./checkpoints/ditto_cfg/v0.4_hubert_cfg_pytorch.pkl" \
+    --audio_path "./example/audio.wav" \
+    --source_path "./example/image.png" \
+    --output_path "./tmp/result.mp4" 
+```
 
 
 ## 📧 Acknowledgement
@@ -182,3 +225,8 @@ If you find this codebase useful for your research, please use the following ent
     year={2024}
 }
 ```
+
+
+## 🌟 Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=antgroup/ditto-talkinghead&type=Date)](https://www.star-history.com/#antgroup/ditto-talkinghead&Date)
