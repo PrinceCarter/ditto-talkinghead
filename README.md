@@ -33,6 +33,7 @@ Ant Group
 
 
 ## 📌 Updates
+* [2025.07.30] 🔥 **NEW:** [LiveKit Integration](#-livekit-integration) for real-time avatar conversations!
 * [2025.07.11] 🔥 The [PyTorch model](#-pytorch-model) is now available.
 * [2025.07.07] 🔥 Ditto is accepted by ACM MM 2025.
 * [2025.01.21] 🔥 We update the [Colab](https://colab.research.google.com/drive/19SUi1TiO32IS-Crmsu9wrkNspWE8tFbs?usp=sharing) demo, welcome to try it. 
@@ -207,6 +208,36 @@ python inference.py \
     --source_path "./example/image.png" \
     --output_path "./tmp/result.mp4" 
 ```
+
+## 🎙️ LiveKit Integration
+
+**NEW!** Real-time avatar conversations with LiveKit agents integration. Have natural conversations with your Ditto avatar through web browsers or mobile apps.
+
+### Features
+- **Real-time conversations** with AI-powered responses
+- **Synchronized lip movements** and facial expressions  
+- **Web/mobile client support** through LiveKit
+- **Optimized performance** for smooth 30 FPS video streaming
+- **Easy deployment** on RunPod or any GPU cloud
+
+### Quick Start
+```bash
+# Install LiveKit dependencies
+pip install livekit-agents livekit-plugins-openai python-dotenv
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your LiveKit and OpenAI credentials
+
+# Run the avatar agent
+python test_livekit_integration.py dev
+```
+
+### Documentation
+- **[RunPod Setup Guide](RUNPOD_SETUP.md)** - Complete deployment instructions
+- **[LiveKit Integration](livekit_integration/)** - Technical implementation details
+
+The integration follows the LiveKit avatar pattern similar to Simli, allowing seamless integration with existing LiveKit applications.
 
 
 ## 📧 Acknowledgement
