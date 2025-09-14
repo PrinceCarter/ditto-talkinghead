@@ -33,12 +33,42 @@ Ant Group
 
 
 ## 📌 Updates
-* [2025.07.30] 🔥 **NEW:** [LiveKit Integration](#-livekit-integration) for real-time avatar conversations!
+* [2025.09.14] 🔥 **NEW:** [Self-Hosted API Server](#-api-server) for easy video generation!
 * [2025.07.11] 🔥 The [PyTorch model](#-pytorch-model) is now available.
 * [2025.07.07] 🔥 Ditto is accepted by ACM MM 2025.
-* [2025.01.21] 🔥 We update the [Colab](https://colab.research.google.com/drive/19SUi1TiO32IS-Crmsu9wrkNspWE8tFbs?usp=sharing) demo, welcome to try it. 
+* [2025.01.21] 🔥 We update the [Colab](https://colab.research.google.com/drive/19SUi1TiO32IS-Crmsu9wrkNspWE8tFbs?usp=sharing) demo, welcome to try it.
 * [2025.01.10] 🔥 We release our inference [codes](https://github.com/antgroup/ditto-talkinghead) and [models](https://huggingface.co/digital-avatar/ditto-talkinghead).
 * [2024.11.29] 🔥 Our [paper](https://arxiv.org/abs/2411.19509) is in public on arxiv.
+
+## 🚀 API Server
+
+**NEW!** Self-hosted API server for easy video generation. Deploy once and generate videos via HTTP API calls.
+
+### Quick Start
+```bash
+# Setup environment and download models
+./setup_api.sh
+
+# Start API server
+python api_server.py
+
+# Generate video via API
+curl -X POST -F "audio=@audio.wav" -F "image=@image.png" http://localhost:5000/generate
+```
+
+### Features
+- **REST API endpoints** for video generation
+- **File upload support** for audio/image
+- **Session-based processing** with status tracking
+- **Download links** for generated videos
+- **Docker support** for easy deployment
+- **RunPod compatible** for cloud deployment
+
+### Documentation
+- **[API Documentation](API_README.md)** - Complete API reference
+- **[Client Examples](client_example.py)** - Python client examples
+
+The API server provides an easy way to integrate Ditto into your applications without dealing with model loading and inference directly.
 
  
 
@@ -208,36 +238,6 @@ python inference.py \
     --source_path "./example/image.png" \
     --output_path "./tmp/result.mp4" 
 ```
-
-## 🎙️ LiveKit Integration
-
-**NEW!** Real-time avatar conversations with LiveKit agents integration. Have natural conversations with your Ditto avatar through web browsers or mobile apps.
-
-### Features
-- **Real-time conversations** with AI-powered responses
-- **Synchronized lip movements** and facial expressions  
-- **Web/mobile client support** through LiveKit
-- **Optimized performance** for smooth 30 FPS video streaming
-- **Easy deployment** on RunPod or any GPU cloud
-
-### Quick Start
-```bash
-# Install LiveKit dependencies
-pip install livekit-agents livekit-plugins-openai python-dotenv
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your LiveKit and OpenAI credentials
-
-# Run the avatar agent
-python test_livekit_integration.py dev
-```
-
-### Documentation
-- **[RunPod Setup Guide](RUNPOD_SETUP.md)** - Complete deployment instructions
-- **[LiveKit Integration](livekit_integration/)** - Technical implementation details
-
-The integration follows the LiveKit avatar pattern similar to Simli, allowing seamless integration with existing LiveKit applications.
 
 
 ## 📧 Acknowledgement
