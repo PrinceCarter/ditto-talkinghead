@@ -42,13 +42,7 @@ RUN git lfs install
 
 # Download model checkpoints from HuggingFace
 RUN pip install huggingface_hub && \
-    python -c "
-from huggingface_hub import snapshot_download
-import os
-os.makedirs('./checkpoints', exist_ok=True)
-snapshot_download(repo_id='DITTO-TTS/ditto-talkinghead', local_dir='./checkpoints', allow_patterns=['*.pth', '*.pkl', '*.onnx', '*.engine', '*.bin'])
-print('Model checkpoints downloaded successfully')
-"
+    python -c "from huggingface_hub import snapshot_download; import os; os.makedirs('./checkpoints', exist_ok=True); snapshot_download(repo_id='DITTO-TTS/ditto-talkinghead', local_dir='./checkpoints', allow_patterns=['*.pth', '*.pkl', '*.onnx', '*.engine', '*.bin']); print('Model checkpoints downloaded successfully')"
 
 # Make sure conda environment can be activated
 RUN conda init bash
