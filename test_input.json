@@ -1,6 +1,6 @@
 {
     "input": {
-        "audio_url": "https://www.voiptroubleshooter.com/open_speech/american/OSR_us_000_0011_8k.wav",
-        "image_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=512&h=512&fit=crop&crop=face"
+        "audio_path": "./example/audio.wav",
+        "image_path": "./example/image.png"
     }
 }

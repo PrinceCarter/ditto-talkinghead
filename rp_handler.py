@@ -26,7 +26,12 @@ def handler(event):
 
     Expected input format (multiple options):
 
-    Option 1 - URLs (recommended):
+    Option 1 - File uploads (recommended for production):
+    POST with multipart/form-data:
+    - audio: file upload
+    - image: file upload
+
+    Option 2 - URLs:
     {
         "input": {
             "audio_url": "https://example.com/audio.wav",
@@ -34,7 +39,7 @@ def handler(event):
         }
     }
 
-    Option 2 - Base64 (for small files only):
+    Option 3 - Base64 (for small files only):
     {
         "input": {
             "audio_base64": "base64_encoded_audio_data",
@@ -50,6 +55,11 @@ def handler(event):
         # Extract input data
         input_data = event.get('input', {})
 
+        # Check for file uploads (RunPod passes uploaded files in a different way)
+        uploaded_files = event.get('uploaded_files', {})
+        audio_file = uploaded_files.get('audio')
+        image_file = uploaded_files.get('image')
+
         # Check input method
         audio_url = input_data.get('audio_url')
         image_url = input_data.get('image_url')
@@ -59,8 +69,14 @@ def handler(event):
         audio_path = None
         image_path = None
 
-        # Method 1: URLs (recommended)
-        if audio_url and image_url:
+        # Method 1: File uploads (recommended for production)
+        if audio_file and image_file:
+            print("Using file upload input method")
+            audio_path = audio_file  # RunPod provides the file path directly
+            image_path = image_file
+
+        # Method 2: URLs
+        elif audio_url and image_url:
             print("Using URL input method")
             audio_path = download_file(audio_url, '.wav')
             image_path = download_file(image_url, '.png')
@@ -82,7 +98,7 @@ def handler(event):
                 image_path = image_file.name
         else:
             return {
-                "error": "Please provide either (audio_url + image_url) or (audio_base64 + image_base64)"
+                "error": "Please provide files via: 1) File upload (audio + image files), 2) URLs (audio_url + image_url), or 3) Base64 (audio_base64 + image_base64)"
             }
 
         # Create output file path
