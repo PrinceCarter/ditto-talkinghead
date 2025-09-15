@@ -29,11 +29,9 @@ RUN apt-get update && apt-get install -y \
 # Copy project files
 COPY . .
 
-# Install PyTorch first (many packages depend on it)
-RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-
-# Install working package versions (skip TensorRT since we use PyTorch models)
+# Install Python dependencies (using what worked locally on A100)
 RUN pip install --no-cache-dir \
+    runpod \
     librosa \
     tqdm \
     filetype \
@@ -42,10 +40,9 @@ RUN pip install --no-cache-dir \
     scikit-image \
     imageio-ffmpeg \
     colored \
-    numpy==2.1.2
-
-# Add RunPod and additional dependencies
-RUN pip install --no-cache-dir runpod onnxruntime-gpu mediapipe einops
+    onnxruntime-gpu \
+    mediapipe \
+    einops
 
 # Initialize git lfs (for model downloads if needed)
 RUN git lfs install
