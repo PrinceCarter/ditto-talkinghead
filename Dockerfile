@@ -1,5 +1,5 @@
-# CUDA runtime base (matches RunPod GPU runtime)
-FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
+# Use RunPod's base image that matches your working environment
+FROM runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
@@ -8,19 +8,16 @@ ENV DEBIAN_FRONTEND=noninteractive \
     NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
-# System deps
+# Install additional system deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 python3-pip \
     git git-lfs \
     ffmpeg libsndfile1 \
-    libgl1 libglib2.0-0 libsm6 libxext6 libxrender1 libgomp1 curl \
+    libgl1 libglib2.0-0 libsm6 libxext6 libxrender1 libgomp1 \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace/ditto-talkinghead
 
-# Install PyTorch (CUDA build that matches base)
-RUN python3 -m pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cu121 \
-    torch torchvision torchaudio
+# PyTorch already included in base image, just install additional deps
 
 # App deps (pin what matters)
 RUN python3 -m pip install --no-cache-dir \

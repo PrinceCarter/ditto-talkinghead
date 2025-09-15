@@ -97,14 +97,18 @@ def handler(event):
         # Change to ditto directory
         os.chdir('/workspace/ditto-talkinghead')
 
-        # Run inference directly (no conda since we're using system python in Docker)
+        # Run inference with conda environment (RunPod base image has conda)
         cmd = [
-            'python3', 'inference.py',
-            '--data_root', './checkpoints/ditto_pytorch',
-            '--cfg_pkl', './checkpoints/ditto_cfg/v0.4_hubert_cfg_pytorch.pkl',
-            '--audio_path', audio_path,
-            '--source_path', image_path,
-            '--output_path', output_path
+            '/bin/bash', '-c',
+            f'''
+            source /opt/conda/etc/profile.d/conda.sh && \
+            python3 inference.py \
+                --data_root "./checkpoints/ditto_pytorch" \
+                --cfg_pkl "./checkpoints/ditto_cfg/v0.4_hubert_cfg_pytorch.pkl" \
+                --audio_path "{audio_path}" \
+                --source_path "{image_path}" \
+                --output_path "{output_path}"
+            '''
         ]
 
         print("Running ditto inference...")
