@@ -29,22 +29,20 @@ RUN apt-get update && apt-get install -y \
 # Copy project files
 COPY . .
 
-# Install core dependencies first
+# Install PyTorch first (many packages depend on it)
+RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# Install core dependencies
 RUN pip install --no-cache-dir runpod numpy==1.26.4
 
-# Install remaining dependencies
-RUN pip install --no-cache-dir \
-    librosa \
-    tqdm \
-    filetype \
-    imageio \
-    opencv-python-headless \
-    scikit-image \
-    imageio-ffmpeg \
-    colored \
-    onnxruntime-gpu \
-    mediapipe \
-    einops
+# Install remaining dependencies one by one to identify issues
+RUN pip install --no-cache-dir librosa
+RUN pip install --no-cache-dir tqdm filetype imageio
+RUN pip install --no-cache-dir opencv-python-headless
+RUN pip install --no-cache-dir scikit-image imageio-ffmpeg colored
+RUN pip install --no-cache-dir onnxruntime-gpu
+RUN pip install --no-cache-dir mediapipe
+RUN pip install --no-cache-dir einops
 
 # Initialize git lfs (for model downloads if needed)
 RUN git lfs install
