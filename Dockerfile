@@ -53,7 +53,7 @@ RUN git lfs install
 
 # Download model checkpoints from HuggingFace
 RUN python3 -m pip install huggingface_hub && \
-    python3 -c "from huggingface_hub import snapshot_download; import os; os.makedirs('./checkpoints', exist_ok=True); snapshot_download(repo_id='DITTO-TTS/ditto-talkinghead', local_dir='./checkpoints', allow_patterns=['*.pth', '*.pkl', '*.onnx', '*.engine', '*.bin']); print('Model checkpoints downloaded successfully')"
+    python3 -c "from huggingface_hub import snapshot_download; import os; os.makedirs('./checkpoints', exist_ok=True); snapshot_download(repo_id='digital-avatar/ditto-talkinghead', local_dir='./checkpoints', allow_patterns=['*.pth', '*.pkl', '*.onnx', '*.engine', '*.bin']); print('Model checkpoints downloaded successfully')"
 
 # Set working directory
 WORKDIR /workspace/ditto-talkinghead
