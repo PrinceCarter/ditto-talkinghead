@@ -1,5 +1,5 @@
-# Use Ubuntu base with Python (matching our working local environment)
-FROM nvidia/cuda:11.8-devel-ubuntu22.04
+# Use Ubuntu base with Python
+FROM ubuntu:22.04
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
@@ -29,6 +29,9 @@ RUN apt-get update && apt-get install -y \
 
 # Copy project files
 COPY . .
+
+# Install PyTorch with CUDA support first
+RUN python3 -m pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 # Install Python dependencies (using what worked locally on A100)
 RUN python3 -m pip install --no-cache-dir \
