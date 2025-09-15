@@ -8,36 +8,39 @@ ENV DEBIAN_FRONTEND=noninteractive \
     NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
-# Install miniconda (to match your exact setup)
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
-    bash /tmp/miniconda.sh -b -p /opt/miniconda && \
-    rm /tmp/miniconda.sh && \
-    /opt/miniconda/bin/conda init bash
-
-# Install system deps
+# Install system deps first (including wget)
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget curl \
     git git-lfs \
     ffmpeg libsndfile1 \
     libgl1 libglib2.0-0 libsm6 libxext6 libxrender1 libgomp1 \
  && rm -rf /var/lib/apt/lists/*
 
+# Install miniconda (to match your exact setup)
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
+    bash /tmp/miniconda.sh -b -p /opt/miniconda && \
+    rm /tmp/miniconda.sh
+
+# Initialize conda and add to PATH
+ENV PATH="/opt/miniconda/bin:$PATH"
+RUN conda init bash && \
+    echo ". /opt/miniconda/etc/profile.d/conda.sh" >> ~/.bashrc
+
 WORKDIR /workspace/ditto-talkinghead
 
-# Create conda environment exactly like we did locally
-RUN /opt/miniconda/bin/conda create -n ditto python=3.10 -y
+# Create conda environment (now that conda is properly set up)
+RUN /bin/bash -c "source /opt/miniconda/etc/profile.d/conda.sh && conda create -n ditto python=3.10 -y"
 
-# Install PyTorch first using miniconda path
-RUN /opt/miniconda/bin/conda run -n ditto pip install --no-cache-dir \
-    torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+# Install packages in conda environment using bash with proper sourcing
+RUN /bin/bash -c "source /opt/miniconda/etc/profile.d/conda.sh && conda activate ditto && \
+    pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118"
 
-# Install basic dependencies
-RUN /opt/miniconda/bin/conda run -n ditto pip install --no-cache-dir \
-    runpod huggingface_hub hf_transfer requests numpy scipy
+RUN /bin/bash -c "source /opt/miniconda/etc/profile.d/conda.sh && conda activate ditto && \
+    pip install --no-cache-dir runpod huggingface_hub hf_transfer requests numpy scipy"
 
-# Install remaining packages
-RUN /opt/miniconda/bin/conda run -n ditto pip install --no-cache-dir \
-    librosa tqdm filetype imageio opencv-python-headless \
-    scikit-image imageio-ffmpeg colored onnxruntime einops
+RUN /bin/bash -c "source /opt/miniconda/etc/profile.d/conda.sh && conda activate ditto && \
+    pip install --no-cache-dir librosa tqdm filetype imageio opencv-python-headless \
+    scikit-image imageio-ffmpeg colored onnxruntime einops"
 
 # Set conda environment path (using miniconda path)
 ENV PATH="/opt/miniconda/envs/ditto/bin:$PATH"
