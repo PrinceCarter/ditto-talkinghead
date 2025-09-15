@@ -26,25 +26,16 @@ RUN apt-get update && apt-get install -y \
 # Copy project files
 COPY . .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir \
-    runpod \
-    tensorrt \
-    librosa \
-    tqdm \
-    filetype \
-    imageio \
-    opencv_python_headless \
-    scikit-image \
-    cython \
-    cuda-python \
-    imageio-ffmpeg \
-    colored \
-    polygraphy \
-    numpy==1.26.4 \
-    onnxruntime-gpu \
-    mediapipe \
-    einops
+# Install Python dependencies in smaller batches to avoid build issues
+RUN pip install --no-cache-dir runpod numpy==1.26.4
+
+RUN pip install --no-cache-dir tensorrt librosa tqdm filetype
+
+RUN pip install --no-cache-dir imageio opencv_python_headless scikit-image
+
+RUN pip install --no-cache-dir cython cuda-python imageio-ffmpeg colored
+
+RUN pip install --no-cache-dir polygraphy onnxruntime-gpu mediapipe einops
 
 # Initialize git lfs (for model downloads if needed)
 RUN git lfs install
