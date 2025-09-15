@@ -32,23 +32,19 @@ COPY . .
 # Install PyTorch first (many packages depend on it)
 RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
-# Install dependencies exactly as specified in README
+# Install working package versions (skip TensorRT since we use PyTorch models)
 RUN pip install --no-cache-dir \
-    tensorrt==8.6.1 \
     librosa \
     tqdm \
     filetype \
     imageio \
     opencv_python_headless \
     scikit-image \
-    cython \
-    cuda-python \
     imageio-ffmpeg \
     colored \
-    polygraphy \
-    numpy==2.0.1
+    numpy==2.1.2
 
-# Add RunPod specific dependencies
+# Add RunPod and additional dependencies
 RUN pip install --no-cache-dir runpod onnxruntime-gpu mediapipe einops
 
 # Initialize git lfs (for model downloads if needed)
