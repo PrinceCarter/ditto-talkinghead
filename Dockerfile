@@ -17,8 +17,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /workspace/ditto-talkinghead
 
-# Just use conda directly (mambaforge has it working out of the box)
-RUN conda create -n ditto python=3.10 -y
+# Accept conda Terms of Service first, then create environment
+RUN conda config --set channel_priority flexible && \
+    echo "yes" | conda tos accept --all && \
+    conda create -n ditto python=3.10 -y
 
 # Install packages the simple way
 RUN conda run -n ditto pip install --no-cache-dir \
