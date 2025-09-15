@@ -1,0 +1,74 @@
+# Git and version control
+.git
+.git-lfs
+.gitignore
+
+# Model checkpoints and data (never bake into image)
+checkpoints/
+data/
+datasets/
+outputs/
+tmp/
+models/
+
+# Cache directories
+.cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+.coverage
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Large binary files
+*.pth
+*.bin
+*.onnx
+*.engine
+*.pkl
+*.pt
+*.safetensors
+*.h5
+*.hdf5
+
+# Jupyter notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Node modules (if any)
+node_modules/
+
+# Test files and examples that aren't needed
+test_*.json
+get-docker.sh
+
+# Documentation (keep only essential)
+*.md
+!README.md
