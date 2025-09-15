@@ -101,7 +101,7 @@ def handler(event):
         cmd = [
             '/bin/bash', '-c',
             f'''
-            source /opt/miniconda/etc/profile.d/conda.sh && \
+            eval \"$(conda shell.bash hook)\" && \
             conda activate ditto && \
             python3 inference.py \
                 --data_root "./checkpoints/ditto_pytorch" \
