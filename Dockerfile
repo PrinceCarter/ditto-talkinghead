@@ -23,28 +23,35 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Make sure conda environment can be activated first
-RUN conda init bash
-
 # Copy project files
 COPY . .
 
-# Install Python dependencies using conda and pip
-RUN /bin/bash -c "source ~/.bashrc && conda activate base && pip install --no-cache-dir runpod numpy==1.26.4"
+# Install core dependencies first
+RUN pip install --no-cache-dir runpod numpy==1.26.4
 
-RUN /bin/bash -c "source ~/.bashrc && conda activate base && pip install --no-cache-dir tensorrt librosa tqdm filetype"
-
-RUN /bin/bash -c "source ~/.bashrc && conda activate base && pip install --no-cache-dir imageio opencv_python_headless scikit-image"
-
-RUN /bin/bash -c "source ~/.bashrc && conda activate base && pip install --no-cache-dir cython cuda-python imageio-ffmpeg colored"
-
-RUN /bin/bash -c "source ~/.bashrc && conda activate base && pip install --no-cache-dir polygraphy onnxruntime-gpu mediapipe einops"
+# Install remaining dependencies
+RUN pip install --no-cache-dir \
+    librosa \
+    tqdm \
+    filetype \
+    imageio \
+    opencv-python-headless \
+    scikit-image \
+    imageio-ffmpeg \
+    colored \
+    onnxruntime-gpu \
+    mediapipe \
+    einops
 
 # Initialize git lfs (for model downloads if needed)
 RUN git lfs install
 
 # Download model checkpoints from HuggingFace
-RUN /bin/bash -c "source ~/.bashrc && conda activate base && pip install huggingface_hub && python -c \"from huggingface_hub import snapshot_download; import os; os.makedirs('./checkpoints', exist_ok=True); snapshot_download(repo_id='DITTO-TTS/ditto-talkinghead', local_dir='./checkpoints', allow_patterns=['*.pth', '*.pkl', '*.onnx', '*.engine', '*.bin']); print('Model checkpoints downloaded successfully')\""
+RUN pip install huggingface_hub && \
+    python -c "from huggingface_hub import snapshot_download; import os; os.makedirs('./checkpoints', exist_ok=True); snapshot_download(repo_id='DITTO-TTS/ditto-talkinghead', local_dir='./checkpoints', allow_patterns=['*.pth', '*.pkl', '*.onnx', '*.engine', '*.bin']); print('Model checkpoints downloaded successfully')"
+
+# Make sure conda environment can be activated
+RUN conda init bash
 
 # Set working directory
 WORKDIR /workspace/ditto-talkinghead
