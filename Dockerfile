@@ -4,6 +4,9 @@ FROM continuumio/miniconda3:latest
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH="/opt/miniconda3/bin:$PATH"
+ENV CUDA_VISIBLE_DEVICES=0
+ENV NVIDIA_VISIBLE_DEVICES=all
+ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
 WORKDIR /workspace/ditto-talkinghead
 
