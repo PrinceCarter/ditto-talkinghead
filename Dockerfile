@@ -17,15 +17,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /workspace/ditto-talkinghead
 
-# Create conda environment (simplified, no complex environment.yaml)
-RUN conda create -n ditto python=3.10 -y && \
-    conda run -n ditto pip install --no-cache-dir \
-    runpod \
-    huggingface_hub hf_transfer \
-    torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 \
+# Create conda environment step by step
+RUN conda create -n ditto python=3.10 -y
+
+# Install PyTorch first
+RUN conda run -n ditto pip install --no-cache-dir \
+    torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+
+# Install basic dependencies
+RUN conda run -n ditto pip install --no-cache-dir \
+    runpod huggingface_hub hf_transfer requests numpy scipy
+
+# Install remaining packages
+RUN conda run -n ditto pip install --no-cache-dir \
     librosa tqdm filetype imageio opencv-python-headless \
-    scikit-image imageio-ffmpeg colored onnxruntime einops \
-    requests numpy scipy
+    scikit-image imageio-ffmpeg colored onnxruntime einops
 
 # Set conda environment path
 ENV PATH="/opt/conda/envs/ditto/bin:$PATH"
