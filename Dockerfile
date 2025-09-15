@@ -27,7 +27,8 @@ RUN python3 -m pip install --no-cache-dir \
     runpod \
     huggingface_hub hf_transfer \
     librosa tqdm filetype imageio opencv_python_headless \
-    scikit-image imageio-ffmpeg colored onnxruntime-gpu mediapipe einops
+    scikit-image imageio-ffmpeg colored onnxruntime-gpu mediapipe einops \
+    requests
 
 # Copy only the minimal code to avoid cache-busting
 COPY rp_handler.py inference.py stream_pipeline_*.py ./

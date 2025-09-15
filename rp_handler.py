@@ -4,16 +4,37 @@ import sys
 import subprocess
 import base64
 import tempfile
+import requests
 from pathlib import Path
 
 # Add the current directory to Python path
 sys.path.append('/workspace/ditto-talkinghead')
 
+def download_file(url, suffix):
+    """Download file from URL to temporary file"""
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+
+    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp_file:
+        for chunk in response.iter_content(chunk_size=8192):
+            tmp_file.write(chunk)
+        return tmp_file.name
+
 def handler(event):
     """
     RunPod handler for ditto-talkinghead video inference
 
-    Expected input format:
+    Expected input format (multiple options):
+
+    Option 1 - URLs (recommended):
+    {
+        "input": {
+            "audio_url": "https://example.com/audio.wav",
+            "image_url": "https://example.com/image.png"
+        }
+    }
+
+    Option 2 - Base64 (for small files only):
     {
         "input": {
             "audio_base64": "base64_encoded_audio_data",
@@ -29,26 +50,40 @@ def handler(event):
         # Extract input data
         input_data = event.get('input', {})
 
+        # Check input method
+        audio_url = input_data.get('audio_url')
+        image_url = input_data.get('image_url')
         audio_base64 = input_data.get('audio_base64')
         image_base64 = input_data.get('image_base64')
-        audio_format = input_data.get('audio_format', 'wav')
-        image_format = input_data.get('image_format', 'png')
 
-        if not audio_base64 or not image_base64:
+        audio_path = None
+        image_path = None
+
+        # Method 1: URLs (recommended)
+        if audio_url and image_url:
+            print("Using URL input method")
+            audio_path = download_file(audio_url, '.wav')
+            image_path = download_file(image_url, '.png')
+
+        # Method 2: Base64 (fallback for small files)
+        elif audio_base64 and image_base64:
+            print("Using base64 input method")
+            audio_format = input_data.get('audio_format', 'wav')
+            image_format = input_data.get('image_format', 'png')
+
+            with tempfile.NamedTemporaryFile(suffix=f'.{audio_format}', delete=False) as audio_file:
+                audio_data = base64.b64decode(audio_base64)
+                audio_file.write(audio_data)
+                audio_path = audio_file.name
+
+            with tempfile.NamedTemporaryFile(suffix=f'.{image_format}', delete=False) as image_file:
+                image_data = base64.b64decode(image_base64)
+                image_file.write(image_data)
+                image_path = image_file.name
+        else:
             return {
-                "error": "Both audio_base64 and image_base64 are required"
+                "error": "Please provide either (audio_url + image_url) or (audio_base64 + image_base64)"
             }
-
-        # Create temporary files for input
-        with tempfile.NamedTemporaryFile(suffix=f'.{audio_format}', delete=False) as audio_file:
-            audio_data = base64.b64decode(audio_base64)
-            audio_file.write(audio_data)
-            audio_path = audio_file.name
-
-        with tempfile.NamedTemporaryFile(suffix=f'.{image_format}', delete=False) as image_file:
-            image_data = base64.b64decode(image_base64)
-            image_file.write(image_data)
-            image_path = image_file.name
 
         # Create output file path
         output_path = tempfile.mktemp(suffix='.mp4')
@@ -60,19 +95,14 @@ def handler(event):
         # Change to ditto directory
         os.chdir('/workspace/ditto-talkinghead')
 
-        # Activate conda and run inference
+        # Run inference directly (no conda since we're using system python in Docker)
         cmd = [
-            '/bin/bash', '-c',
-            f'''
-            source /opt/miniconda/etc/profile.d/conda.sh && \
-            conda activate ditto && \
-            python inference.py \
-                --data_root "./checkpoints/ditto_pytorch" \
-                --cfg_pkl "./checkpoints/ditto_cfg/v0.4_hubert_cfg_pytorch.pkl" \
-                --audio_path "{audio_path}" \
-                --source_path "{image_path}" \
-                --output_path "{output_path}"
-            '''
+            'python3', 'inference.py',
+            '--data_root', './checkpoints/ditto_pytorch',
+            '--cfg_pkl', './checkpoints/ditto_cfg/v0.4_hubert_cfg_pytorch.pkl',
+            '--audio_path', audio_path,
+            '--source_path', image_path,
+            '--output_path', output_path
         ]
 
         print("Running ditto inference...")
