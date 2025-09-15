@@ -1,5 +1,5 @@
-# Use miniconda base that matches the working environment
-FROM continuumio/miniconda3:latest
+# Use the exact base that matches our working RunPod environment
+FROM runpod/base:0.6.2-cuda12.2.0
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
@@ -7,6 +7,12 @@ ENV DEBIAN_FRONTEND=noninteractive \
     HF_HUB_ENABLE_HF_TRANSFER=1 \
     NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+# Install miniconda (to match your exact setup)
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
+    bash /tmp/miniconda.sh -b -p /opt/miniconda && \
+    rm /tmp/miniconda.sh && \
+    /opt/miniconda/bin/conda init bash
 
 # Install system deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -17,24 +23,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /workspace/ditto-talkinghead
 
-# Create conda environment step by step
-RUN conda create -n ditto python=3.10 -y
+# Create conda environment exactly like we did locally
+RUN /opt/miniconda/bin/conda create -n ditto python=3.10 -y
 
-# Install PyTorch first
-RUN conda run -n ditto pip install --no-cache-dir \
+# Install PyTorch first using miniconda path
+RUN /opt/miniconda/bin/conda run -n ditto pip install --no-cache-dir \
     torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
 # Install basic dependencies
-RUN conda run -n ditto pip install --no-cache-dir \
+RUN /opt/miniconda/bin/conda run -n ditto pip install --no-cache-dir \
     runpod huggingface_hub hf_transfer requests numpy scipy
 
 # Install remaining packages
-RUN conda run -n ditto pip install --no-cache-dir \
+RUN /opt/miniconda/bin/conda run -n ditto pip install --no-cache-dir \
     librosa tqdm filetype imageio opencv-python-headless \
     scikit-image imageio-ffmpeg colored onnxruntime einops
 
-# Set conda environment path
-ENV PATH="/opt/conda/envs/ditto/bin:$PATH"
+# Set conda environment path (using miniconda path)
+ENV PATH="/opt/miniconda/envs/ditto/bin:$PATH"
 
 # Copy code
 COPY rp_handler.py inference.py stream_pipeline_*.py ./

@@ -3,8 +3,8 @@ set -e
 
 echo "Starting Ditto TalkingHead container..."
 
-# Activate conda environment
-source /opt/conda/etc/profile.d/conda.sh
+# Activate conda environment (using miniconda path)
+source /opt/miniconda/etc/profile.d/conda.sh
 conda activate ditto
 
 # Create model directory
