@@ -97,11 +97,12 @@ def handler(event):
         # Change to ditto directory
         os.chdir('/workspace/ditto-talkinghead')
 
-        # Run inference with conda environment (RunPod base image has conda)
+        # Run inference with conda environment (use miniconda path)
         cmd = [
             '/bin/bash', '-c',
             f'''
             source /opt/conda/etc/profile.d/conda.sh && \
+            conda activate ditto && \
             python3 inference.py \
                 --data_root "./checkpoints/ditto_pytorch" \
                 --cfg_pkl "./checkpoints/ditto_cfg/v0.4_hubert_cfg_pytorch.pkl" \

@@ -1,5 +1,5 @@
-# Use RunPod's base image that matches your working environment
-FROM runpod/pytorch:2.1.0-py3.10-cuda11.8.0-devel-ubuntu22.04
+# Use miniconda base that matches the working environment
+FROM continuumio/miniconda3:latest
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
@@ -8,24 +8,37 @@ ENV DEBIAN_FRONTEND=noninteractive \
     NVIDIA_VISIBLE_DEVICES=all \
     NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
-# Install additional system deps
+# Install system deps and NVIDIA drivers
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git git-lfs \
     ffmpeg libsndfile1 \
     libgl1 libglib2.0-0 libsm6 libxext6 libxrender1 libgomp1 \
+    curl wget \
  && rm -rf /var/lib/apt/lists/*
+
+# Install NVIDIA container runtime
+RUN curl -fsSL https://nvidia.github.io/nvidia-container-runtime/gpgkey | apt-key add - && \
+    curl -s -L https://nvidia.github.io/nvidia-container-runtime/ubuntu20.04/nvidia-container-runtime.list | \
+    tee /etc/apt/sources.list.d/nvidia-container-runtime.list
 
 WORKDIR /workspace/ditto-talkinghead
 
-# PyTorch already included in base image, just install additional deps
+# Copy environment file first
+COPY environment.yaml .
 
-# App deps (pin what matters)
-RUN python3 -m pip install --no-cache-dir \
+# Create conda environment (skip TensorRT parts that fail)
+RUN conda env create -f environment.yaml --name ditto || true
+
+# Activate conda environment and install remaining deps
+RUN echo "source activate ditto" >> ~/.bashrc
+ENV PATH /opt/conda/envs/ditto/bin:$PATH
+
+# Install missing packages that conda env creation missed
+RUN /opt/conda/envs/ditto/bin/pip install --no-cache-dir \
     runpod \
     huggingface_hub hf_transfer \
-    librosa tqdm filetype imageio opencv_python_headless \
-    scikit-image imageio-ffmpeg colored onnxruntime-gpu mediapipe einops \
-    requests
+    requests \
+    mediapipe || echo "mediapipe install failed, skipping"
 
 # Copy only the minimal code to avoid cache-busting
 COPY rp_handler.py inference.py stream_pipeline_*.py ./
