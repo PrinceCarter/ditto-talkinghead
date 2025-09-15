@@ -97,7 +97,7 @@ def handler(event):
         # Change to ditto directory
         os.chdir('/workspace/ditto-talkinghead')
 
-        # Run inference with conda environment (use miniconda path)
+        # Run inference with conda environment activated
         cmd = [
             '/bin/bash', '-c',
             f'''
